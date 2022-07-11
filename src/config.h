@@ -9,6 +9,7 @@
 #include "data_structures/queue.h"
 #include "data_structures/list.h"
 #include "data_structures/stack.h"
+#include "data_structures/node.h"
 #include "algorithms/algorithms.h"
 #include "token/token.h"
 #include "rpn/rpn.h"

@@ -1,64 +1,44 @@
-#include <stdlib.h>
 #include "queue.h"
 
 t_queue *queue_create() {
     t_queue *queue = (t_queue *)malloc(sizeof(t_queue));
-    queue->count = 0;
     queue->head = NULL;
     queue->tail = NULL;
     return queue;
 }
 
-void queue_destroy(t_queue *queue) {
-    if (queue != NULL) {
-        while (!queue_is_empty(queue)) {
-            queue_dequeue(queue);
-        }
-        free(queue);
+void queue_destroy(t_queue *self) {
+    while (!queue_is_empty(self)) {
+        free(queue_dequeue(self));
     }
+    free(self);
 }
 
-void *queue_get_at_index(t_queue *queue, int index) {
-    t_node *temp;
-    void *res = NULL;
-    if (queue != NULL) {
-        temp = queue->head;
-        int i = 0;
-        for (; i < queue->count && i != index; ++i) {
-            temp = temp->next;
-        }
-        if (i == index) {
-            res = temp->value;
-        }
+void queue_enqueue(t_queue *self, void *value) {
+    t_node *node = node_create(value);
+    if (self->head == NULL) {
+        self->head = node;
+    } else {
+        self->tail->next = node;
     }
-    return res;
+    self->tail = node;
 }
 
-void queue_enqueue(t_queue *queue, void *value) {
-    if (queue != NULL) {
-        t_node *node = node_create(value);
-        if (queue->head == NULL) {
-            queue->head = node;
-        } else {
-            queue->tail->next = node;
-        }
-        queue->tail = node;
-        queue->count++;
-    }
-}
-
-void *queue_dequeue(t_queue *queue) {
+void *queue_dequeue(t_queue *self) {
     void *value = NULL;
-    if (queue != NULL && !queue_is_empty(queue)) {
-        value = queue->head->value;
-        t_node *temp = queue->head;
-        queue->head = queue->head->next;
+    if (!queue_is_empty(self)) {
+        value = self->head->value;
+        t_node *temp = self->head;
+        self->head = self->head->next;
         node_destroy(temp);
-        queue->count--;
     }
     return value;
 }
 
-int queue_is_empty(t_queue *queue) {
-    return queue->count == 0;
+void *queue_pick(t_queue *self) {
+    return self->head->value;
+}
+
+int queue_is_empty(t_queue *self) {
+    return self->head == NULL;
 }

@@ -1,51 +1,39 @@
-#include <stdlib.h>
 #include "stack.h"
 
 t_stack *stack_create() {
     t_stack *stack = (t_stack *)malloc(sizeof(t_stack));
-    stack->count = 0;
     stack->top = NULL;
     return stack;
 }
 
-void stack_destroy(t_stack *stack) {
-    if (stack != NULL) {
-        while (!stack_is_empty(stack)) {
-            stack_pop(stack);
-        }
-        free(stack);
+void stack_destroy(t_stack *self) {
+    while (!stack_is_empty(self)) {
+        free(stack_pop(self));
     }
+    free(self);
 }
 
-void *stack_pop(t_stack *stack) {
+void *stack_pop(t_stack *self) {
     void *value = NULL;
-    if (stack != NULL && !stack_is_empty(stack)) {
-        value = stack->top->value;
-        t_node *temp = stack->top;
-        stack->top = stack->top->next;
+    if (!stack_is_empty(self)) {
+        value = self->top->value;
+        t_node *temp = self->top;
+        self->top = self->top->next;
         node_destroy(temp);
-        stack->count--;
     }
     return value;
 }
 
-void stack_push(t_stack *stack, void *value) {
-    if (stack != NULL) {
-        t_node *node = node_create(value);
-        node->next = stack->top;
-        stack->top = node;
-        stack->count++;
-    }
+void stack_push(t_stack *self, void *value) {
+    t_node *node = node_create(value);
+    node->next = self->top;
+    self->top = node;
 }
 
-void *stack_pick(t_stack *stack) {
-    void *value = NULL;
-    if (stack != NULL && stack->top != NULL) {
-        value = stack->top->value;
-    }
-    return value;
+void *stack_pick(t_stack *self) {
+    return self->top->value;
 }
 
-int stack_is_empty(t_stack *stack) {
-    return stack->count == 0;
+int stack_is_empty(t_stack *self) {
+    return self->top == NULL;
 }

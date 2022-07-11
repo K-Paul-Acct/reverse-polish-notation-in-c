@@ -1,4 +1,3 @@
-#include <stdlib.h>
 #include "node.h"
 
 t_node *node_create(void *value) {
@@ -8,8 +7,6 @@ t_node *node_create(void *value) {
     return node;
 }
 
-void node_destroy(t_node *node) {
-    if (node != NULL) {
-        free(node);
-    }
+void node_destroy(t_node *self) {
+    free(self);
 }
