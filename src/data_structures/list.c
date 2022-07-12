@@ -1,3 +1,5 @@
+#include <stdio.h>
+#include <stdlib.h>
 #include "list.h"
 
 t_list *list_create() {
@@ -12,6 +14,7 @@ void list_destroy(t_list *self) {
     while(!list_is_empty(self)) {
         free(list_pop_front(self));
     }
+    free(self);
 }
 
 //void *list_front(t_list *self);

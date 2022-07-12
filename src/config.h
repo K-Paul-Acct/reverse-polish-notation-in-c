@@ -1,18 +1,7 @@
 #ifndef SRC_CONFIG_H_
 #define SRC_CONFIG_H_
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <math.h>
-#include "data_io/data_io.h"
-#include "data_structures/queue.h"
-#include "data_structures/list.h"
-#include "data_structures/stack.h"
-#include "data_structures/node.h"
-#include "algorithms/algorithms.h"
-#include "token/token.h"
-#include "rpn/rpn.h"
 
 #define HEIGHT 25
 #define WIDTH 80

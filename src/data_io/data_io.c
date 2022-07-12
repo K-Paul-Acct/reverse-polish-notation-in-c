@@ -1,150 +1,154 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
+#include "../data_structures/stack.h"
+#include "../data_structures/queue.h"
 #include "data_io.h"
 
-t_token *scan_number(char *c);
-t_token *scan_function(char *c);
-
-void print_plane(int plane[HEIGHT][WIDTH]) {
-    for (int i = 0; i < HEIGHT; ++i) {
-        for (int j = 0; j < WIDTH; ++j) {
-            printf("%c", plane[i][j] ? '*' : ' ');
-        }
-        ptintf("\n");
-    }
-}
-
 t_list *tokenize_input() {
-    t_queue *output_queue = queue_create();
-    t_operator *operator;
-    t_operand *operand;
+    t_list *l = list_create();
     t_token *token, *last_token = NULL;
+    int scan = 1, iterate = 1;
     char c;
-    int is_first = 1, scan = 1;
-    do {
+    while (iterate) {
+        token = NULL;
         if (scan) {
             c = getchar();
         }
         scan = 1;
-        operator = NULL;
-        operand = NULL;
         if (c == ' ') {
             continue;
+        } else if (c == '\n') {
+            iterate = 0;
+            continue;
         } else if ('0' <= c && c <= '9') {
-            operand = scan_number(&c);
+            token = scan_number(&c);
             scan = 0;
         } else if (c == 'x') {
-            operand = operand_create(VARIABLE, 'x');
-        } else if (c == '-' && (token_is_l_parenthesis(last_token) || is_first ||
-                                token_is_binary_operator(last_token))) {
-            operator = operator_create(FUNCTION, c);
+            token = token_create_variable('x');
+        } else if (c == '-' &&
+                   (last_token == NULL || last_token->symbol == '(' ||
+                   last_token->type == OPERATOR)) {
+            token = token_create_function(NEGATE);
         } else if (is_operator(c)) {
-            operator = operator_create(OPERATOR, c);
-        } else if (c == '(') {
-            operator = operator_create(L_PARENTHESIS, c);
-        } else if (c == ')') {
-            operator = operator_create(R_PARENTHESIS, c);
-        } else if (c != '\n') {
-            operator = scan_function(&c);
+            token = token_create_operator(c);
+        } else if (c == '(' || c == ')') {
+            token = token_create_parenthesis(c);
+        } else {
+            token = scan_function(&c);
             scan = 0;
-        } else {
-            break;
         }
-        if (operator == NULL && operand == NULL) {
-            while (!queue_is_empty(output_queue)) {
-                token_destroy((t_token *)queue_dequeue(output_queue));
-            }
-            queue_destroy(output_queue);
-            output_queue = NULL;
-            c = '\n';
+        if (token == NULL) {
+            list_destroy(l);
+            l = NULL;
+            iterate = 0;
         } else {
-            token = token_create(operator, operand);
-            queue_enqueue(output_queue, token);
+            list_push_back(l, token);
             last_token = token;
         }
-        is_first = 0;
-    } while (c != '\n');
-    return output_queue;
+    }
+    return l;
 }
 
 t_token *scan_function(char *c) {
-    t_operator *operator = NULL;
+    t_token *token = NULL;
     char func[8] = {0};
-    int index = 1, exit = 0;
+    int index = 1, iterate = 1;
     func[0] = *c;
-    while (!exit) {
+    while (iterate) {
         *c = getchar();
-        if (*c != '\n' && index < 7) {
+        if (*c == '\n' || *c == '(' || index == 7) {
+            iterate = 0;
+        } else {
             func[index++] = *c;
-        }
-        if (*c == '(' || index > 5) {
-            exit = 1;
         }
     }
     if (*c == '(') {
         char func_letter = '\0';
-        if (strcmp("sin(", func) == 0) {
-            func_letter = 's';  // 's' for sin
-        } else if (strcmp("cos(", func) == 0) {
-            func_letter = 'c';  // 'c' for cos
-        } else if (strcmp("tan(", func) == 0) {
-            func_letter = 't';  // 't' for tan
-        } else if (strcmp("ctg(", func) == 0) {
-            func_letter = 'o';  // 'o' for cot
-        } else if (strcmp("sqrt(", func) == 0) {
-            func_letter = 'q';  // 'q' for sqrt
-        } else if (strcmp("ln(", func) == 0) {
-            func_letter = 'l';  // 'l' for ln
+        if (!strcmp("sin", func)) {
+            func_letter = SIN;
+        } else if (!strcmp("cos", func)) {
+            func_letter = COS;
+        } else if (!strcmp("tan", func)) {
+            func_letter = TAN;
+        } else if (!strcmp("cot", func)) {
+            func_letter = COT;
+        } else if (!strcmp("arcsin", func)) {
+            func_letter = ARCSIN;
+        } else if (!strcmp("arccos", func)) {
+            func_letter = ARCCOS;
+        } else if (!strcmp("arctan", func)) {
+            func_letter = ARCTAN;
+        } else if (!strcmp("arccot", func)) {
+            func_letter = ARCCOT;
+        } else if (!strcmp("exp", func)) {
+            func_letter = EXP;
+        } else if (!strcmp("ln", func)) {
+            func_letter = LN;
+        } else if (!strcmp("sqrt", func)) {
+            func_letter = SQRT;
+        } else if (!strcmp("fact", func)) {
+            func_letter = FACT;
         }
         if (func_letter != '\0') {
-            operator = operator_create(FUNCTION, func_letter);
+            token = token_create_function(func_letter);
         }
     }
-    return operator;
+    return token;
 }
 
 t_token *scan_number(char *c) {
-    t_operand *operand = NULL;
-    int points_counter = 0, exit = 0;
+    t_token *token = NULL;
+    int points_counter = 0, iterate = 1;
     double number = 0;
-    t_stack *before_point_stack = stack_create();
-    t_stack *after_point_stack = stack_create();
-    while (!exit) {
-        if (*c == '.') {
-            points_counter++;
+    t_stack *before_point_s = stack_create();
+    t_queue *after_point_q = queue_create();
+    while (iterate) {
+        if (*c == '\n') {
+            iterate = 0;
+            continue;
+        } else if (*c == '.') {
+            if (points_counter++ != 0) {
+                iterate = 0;
+            }
         } else if (*c >= '0' && *c <= '9') {
-            if (points_counter == 1) {
-                int *digit = (int *)malloc(sizeof(int));
-                *digit = *c - '0';
-                stack_push(after_point_stack, digit);
-            } else if (points_counter == 0) {
-                int *digit = (int *)malloc(sizeof(int));
-                *digit = *c - '0';
-                stack_push(before_point_stack, digit);
+            int *d = (int *)malloc(sizeof(int));
+            *d = *c - '0';
+            if (points_counter) {
+                queue_enqueue(after_point_q, d);
             } else {
-                exit = 1;
+                stack_push(before_point_s, d);
             }
         } else {
-            exit = 1;
+            iterate = 0;
+            continue;
         }
-        if (!exit) {
-            *c = getchar();
+        *c = getchar();
+    }
+    for (int i = 0; !stack_is_empty(before_point_s); ++i) {
+        int *d = (int *)stack_pop(before_point_s);
+        number += *d * pow(10, i);
+        free(d);
+    }
+    for (int i = -1; !queue_is_empty(after_point_q); --i) {
+        int *d = (int *)queue_dequeue(after_point_q);
+        number += *d * pow(10, i);
+        free(d);
+    }
+    token = token_create_number(number);
+    stack_destroy(before_point_s);
+    queue_destroy(after_point_q);
+    return token;
+}
+
+void print_plane(int plane[HEIGHT][WIDTH]) {
+    for (int i = 0; i < HEIGHT; ++i) {
+        for (int j = 0; j < WIDTH; ++j) {
+            printf("%c", plane[i][j] ? '*' : '.');
         }
+        printf("\n");
     }
-    for (int i = 0; !stack_is_empty(before_point_stack); ++i) {
-        int *digit = (int *)stack_pop(before_point_stack);
-        number += pow(10, i) * *digit;
-        free(digit);
-    }
-    for (int i = -after_point_stack->count; !stack_is_empty(after_point_stack); ++i) {
-        int *digit = (int *)stack_pop(after_point_stack);
-        number += pow(10, i) * *digit;
-        free(digit);
-    }
-    if (points_counter < 2) {
-        operand = operand_create(NUMBER, number);
-    }
-    stack_destroy(before_point_stack);
-    stack_destroy(after_point_stack);
-    return operand;
 }
 
 void print_parsing_error() {

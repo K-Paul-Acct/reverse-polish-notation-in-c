@@ -1,4 +1,9 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
 #include "token.h"
+#include "../algorithms/algorithms.h"
 
 t_token *token_create() {
     return (t_token *)malloc(sizeof(t_token));
@@ -28,6 +33,13 @@ t_token *token_create_function(char symbol) {
 t_token *token_create_operator(char symbol) {
     t_token *token = token_create();
     token->type = OPERATOR;
+    token->symbol = symbol;
+    return token;
+}
+
+t_token *token_create_parenthesis(char symbol) {
+    t_token *token = token_create();
+    token->type = PARENTHESIS;
     token->symbol = symbol;
     return token;
 }

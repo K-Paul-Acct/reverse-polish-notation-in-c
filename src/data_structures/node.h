@@ -1,7 +1,7 @@
 #ifndef SRC_DATA_STRUCTURES_NODE_H_
 #define SRC_DATA_STRUCTURES_NODE_H_
 
-#include "../config.h"
+#include "node.h"
 
 typedef struct node {
     void *value;

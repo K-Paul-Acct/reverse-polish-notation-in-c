@@ -1,7 +1,8 @@
 #ifndef SRC_RPN_RPN_H_
 #define SRC_RPN_RPN_H_
 
-#include "../config.h"
+#include "../data_structures/queue.h"
+#include "../data_structures/list.h"
 
 t_queue *shunting_yard_algorithm(t_list *tokens);
 double compute_rpn(t_queue *rpn, double x);

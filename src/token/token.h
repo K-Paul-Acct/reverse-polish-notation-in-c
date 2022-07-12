@@ -1,8 +1,6 @@
 #ifndef SRC_TOKEN_TOKEN_H_
 #define SRC_TOKEN_TOKEN_H_
 
-#include "../config.h"
-
 #define NUMBER 0
 #define VARIABLE 1
 #define FUNCTION 2
@@ -38,6 +36,7 @@ t_token *token_create_number(double value);
 t_token *token_create_variable(char symbol);
 t_token *token_create_function(char symbol);
 t_token *token_create_operator(char symbol);
+t_token *token_create_parenthesis(char symbol);
 void token_destroy(t_token *token);
 
 int is_operator(char c);

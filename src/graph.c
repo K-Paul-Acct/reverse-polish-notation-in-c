@@ -1,3 +1,6 @@
+#include <stdio.h>
+#include "data_structures/list.h"
+#include "data_structures/queue.h"
 #include "config.h"
 
 void fill_plane(int plane[HEIGHT][WIDTH], t_queue *rpn);
@@ -10,9 +13,11 @@ int main() {
         if (rpn != NULL) {
             fill_plane(plane, rpn);
             print_plane(plane);
+            queue_destroy(rpn);
         } else {
             print_error();
         }
+        list_destroy(tokens);
     } else {
         print_error();
     }

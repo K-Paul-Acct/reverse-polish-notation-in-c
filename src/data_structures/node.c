@@ -1,3 +1,5 @@
+#include <stdio.h>
+#include <stdlib.h>
 #include "node.h"
 
 t_node *node_create(void *value) {

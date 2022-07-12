@@ -1,7 +1,7 @@
 #ifndef SRC_DATA_STRUCTURES_STACK_H_
 #define SRC_DATA_STRUCTURES_STACK_H_
 
-#include "../config.h"
+#include "node.h"
 
 typedef struct stack {
     t_node *top;
