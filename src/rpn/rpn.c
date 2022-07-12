@@ -1,3 +1,5 @@
+#include "../token/token.h"
+#include "../data_structures/stack.h"
 #include "rpn.h"
 
 t_queue *shunting_yard_algorithm(t_list *tokens) {
@@ -12,28 +14,30 @@ t_queue *shunting_yard_algorithm(t_list *tokens) {
         } else if (t->type == OPERATOR) {
             while (!stack_is_empty(s) &&
                    ((t_token *)stack_pick(s))->type == OPERATOR &&
-                   operator_get_associativity(t) == LEFT &&
+                   operator_get_associativity(t) != LEFT &&
                    operator_compare_precedence(t, (t_token *)stack_pick(s)) <= 0) {
                 queue_enqueue(q, stack_pop(s));
             }
+            stack_push(s, t);
         } else if (t->symbol == '(') {
             stack_push(s, t);
         } else if (t->symbol == ')') {
-            while (((t_token *)stack_pick(s))->symbol != '(') {
-                if (stack_is_empty(s)) {
-                    // Error handling.
-                }
+            while (!stack_is_empty(s) && ((t_token *)stack_pick(s))->symbol != '(') {
                 queue_enqueue(q, stack_pop(s));
             }
-            stack_pop(s);
-            if (((t_token *)stack_pick(s))->type == FUNCTION) {
+            if (stack_is_empty(s)) {
+                // TODO: Error handling.
+            } else {
+                token_destroy((t_token *)stack_pop(s));
+            }
+            if (!stack_is_empty(s) && ((t_token *)stack_pick(s))->type == FUNCTION) {
                 queue_enqueue(q, stack_pop(s));
             }
         }
     }
     while (!stack_is_empty(s)) {
-        if (((t_token *)stack_pick(s))->symbol == ')') {
-            // Error handling.
+        if (((t_token *)stack_pick(s))->type == PARENTHESIS) {
+            // TODO: Error handling.
         }
         queue_enqueue(q, stack_pop(s));
     }

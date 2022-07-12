@@ -33,7 +33,11 @@ void stack_push(t_stack *self, void *value) {
 }
 
 void *stack_pick(t_stack *self) {
-    return self->top->value;
+    void *value = NULL;
+    if (!stack_is_empty(self)) {
+        value = self->top->value;
+    }
+    return value;
 }
 
 int stack_is_empty(t_stack *self) {

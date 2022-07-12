@@ -9,6 +9,10 @@ t_token *token_create() {
     return (t_token *)malloc(sizeof(t_token));
 }
 
+void token_destroy(t_token *token) {
+    free(token);
+}
+
 t_token *token_create_number(double value) {
     t_token *token = token_create();
     token->type = NUMBER;
@@ -42,10 +46,6 @@ t_token *token_create_parenthesis(char symbol) {
     token->type = PARENTHESIS;
     token->symbol = symbol;
     return token;
-}
-
-void token_destroy(t_token *token) {
-    free(token);
 }
 
 int is_operator(char c) {
