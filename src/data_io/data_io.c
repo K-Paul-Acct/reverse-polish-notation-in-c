@@ -151,6 +151,66 @@ void print_plane(int plane[HEIGHT][WIDTH]) {
     }
 }
 
+void print_token(t_token *token) {
+    if (token->type == NUMBER) {
+        printf("%.5lf  ", token->value);
+    } else if (token->type == FUNCTION) {
+        switch (token->symbol) {
+        case NEGATE:
+            printf("~  ");
+            break;
+        case SIN:
+            printf("sin  ");
+            break;
+        case COS:
+            printf("cos  ");
+            break;
+        case TAN:
+            printf("tan  ");
+            break;
+        case COT:
+            printf("cot  ");
+            break;
+        case ARCSIN:
+            printf("arcsin  ");
+            break;
+        case ARCCOS:
+            printf("arccos  ");
+            break;
+        case ARCTAN:
+            printf("arctan  ");
+            break;
+        case ARCCOT:
+            printf("arccot  ");
+            break;
+        case EXP:
+            printf("exp  ");
+            break;
+        case LN:
+            printf("ln  ");
+            break;
+        case SQRT:
+            printf("sqrt  ");
+            break;
+        case FACT:
+            printf("fact  ");
+            break;
+        default:
+            break;
+        }
+    } else {
+        printf("%c  ", token->symbol);
+    }
+}
+
+void print_tokens(t_list *tokens) {
+    for (int i = 0; i < list_size(tokens); ++i) {
+        t_token *token = list_get_at_index(tokens, i);
+        print_token(token);
+    }
+    printf("\n");
+}
+
 void print_parsing_error() {
     printf("An error occurred while parsing.\n");
 }

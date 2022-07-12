@@ -46,7 +46,7 @@ void *list_pop_front(t_list *self) {
     return value;
 }
 
-///void *list_pop_back(t_list *self);
+//void *list_pop_back(t_list *self);
 
 void *list_get_at_index(t_list *self, int index) {
     void *value = NULL;

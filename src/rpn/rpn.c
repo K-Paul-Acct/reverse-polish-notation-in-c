@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "../token/token.h"
 #include "../data_structures/stack.h"
 #include "rpn.h"
@@ -5,45 +6,64 @@
 t_queue *shunting_yard_algorithm(t_list *tokens) {
     t_queue *q = queue_create();
     t_stack *s = stack_create();
-    while (!list_is_empty(tokens)) {
+    int iterate = 1;
+    while (iterate && !list_is_empty(tokens)) {
         t_token *t = (t_token *)list_pop_front(tokens);
         if (t->type == NUMBER || t->type == VARIABLE) {
             queue_enqueue(q, t);
         } else if (t->type == FUNCTION) {
             stack_push(s, t);
         } else if (t->type == OPERATOR) {
-            while (!stack_is_empty(s) &&
-                   ((t_token *)stack_pick(s))->type == OPERATOR &&
-                   operator_get_associativity(t) != LEFT &&
-                   operator_compare_precedence(t, (t_token *)stack_pick(s)) <= 0) {
+            t_token *temp = (t_token *)stack_pick(s);
+            int associativity = operator_get_associativity(t);
+            while (!stack_is_empty(s) && temp->type == OPERATOR &&
+                   (operator_compare_precedence(temp, t) > 0 ||
+                   (operator_compare_precedence(temp, t) == 0 && associativity == LEFT))) {
                 queue_enqueue(q, stack_pop(s));
+                temp = (t_token *)stack_pick(s);
             }
             stack_push(s, t);
         } else if (t->symbol == '(') {
             stack_push(s, t);
         } else if (t->symbol == ')') {
-            while (!stack_is_empty(s) && ((t_token *)stack_pick(s))->symbol != '(') {
-                queue_enqueue(q, stack_pop(s));
+            t_token *temp = (t_token *)stack_pop(s);
+            while (temp && temp->symbol != '(') {
+                queue_enqueue(q, temp);
+                temp = (t_token *)stack_pop(s);
             }
-            if (stack_is_empty(s)) {
-                // TODO: Error handling.
+            // Mismanatched parentheses. Closing parenthesis without opening parenthesis.
+            if (temp == NULL) {
+                token_destroy(t);
+                queue_destroy(q);
+                iterate = 0;
+                q = NULL;
+                continue;
             } else {
-                token_destroy((t_token *)stack_pop(s));
+                token_destroy(t);
+                token_destroy(temp);
             }
             if (!stack_is_empty(s) && ((t_token *)stack_pick(s))->type == FUNCTION) {
                 queue_enqueue(q, stack_pop(s));
             }
         }
     }
-    while (!stack_is_empty(s)) {
-        if (((t_token *)stack_pick(s))->type == PARENTHESIS) {
-            // TODO: Error handling.
+    while (iterate && !stack_is_empty(s)) {
+        t_token *temp = (t_token *)stack_pop(s);
+        // Mismanatched parentheses. Opening parenthesis without closing parenthesis.
+        if (temp->type == PARENTHESIS) {
+            token_destroy(temp);
+            queue_destroy(q);
+            iterate = 0;
+            q = NULL;
+            continue;
         }
-        queue_enqueue(q, stack_pop(s));
+        queue_enqueue(q, temp);
     }
+    list_destroy(tokens);
     stack_destroy(s);
     return q;
 }
+
 /*
 double compute_rpn(t_queue *rpn, double x) {
     double y = 0;

@@ -3,7 +3,6 @@
 #include "../token/token.h"
 #include "../data_structures/list.h"
 
-void print_tokens(t_list *tokens);
 void tokenize_input_test();
 void scan_number_test();
 void scan_function_test();
@@ -33,16 +32,4 @@ void scan_number_test() {
     } else {
         printf("Error: scan_number() returned NULL\n");
     }
-}
-
-void print_tokens(t_list *tokens) {
-    for (int i = 0; i < list_size(tokens); ++i) {
-        t_token *token = list_get_at_index(tokens, i);
-        if (token->type == NUMBER) {
-            printf("%.2f  ", token->value);
-        } else {
-            printf("%c  ", token->symbol);
-        }
-    }
-    printf("\n");
 }
