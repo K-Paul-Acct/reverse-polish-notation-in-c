@@ -33,12 +33,12 @@ int main() {
 }
 
 void fill_plane(int plane[HEIGHT][WIDTH], t_queue *rpn) {
-    double step = (X_HIGH - X_LOW) / (double)(WIDTH - 1) / (double)(WIDTH - 1);
+    double step = (X_HIGH - X_LOW) / (double)(WIDTH - 1) / 10.0;
     for (double x = X_LOW; x <= X_HIGH; x += step) {
         double y = compute_rpn(rpn, x);
         if (y >= Y_LOW && y <= Y_HIGH) {
-            int x_mapped = round(map_range(X_LOW, X_HIGH, -0.5, WIDTH - 0.5, x));
-            int y_mapped = round(map_range(Y_LOW, Y_HIGH, -0.5, HEIGHT - 0.5, y));
+            int x_mapped = round(map_range(X_LOW, X_HIGH, -0.4, WIDTH - 0.6, x));
+            int y_mapped = round(map_range(Y_LOW, Y_HIGH, -0.4, HEIGHT - 0.6, y));
             plane[HEIGHT - y_mapped - 1][x_mapped] = 1;
         }
     }
