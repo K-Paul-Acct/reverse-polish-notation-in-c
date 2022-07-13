@@ -29,6 +29,8 @@ int main() {
     } else {
         print_parsing_error();
     }
+    printf("Press enter to exit...\n");
+    getchar();
     return 0;
 }
 
