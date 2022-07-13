@@ -9,6 +9,7 @@ typedef struct queue {
 } t_queue;
 
 t_queue *queue_create();
+t_queue *queue_create_copy(t_queue *sample);
 void queue_destroy(t_queue *self);
 
 void queue_enqueue(t_queue *self, void *value);

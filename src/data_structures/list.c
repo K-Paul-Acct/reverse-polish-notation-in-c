@@ -55,7 +55,7 @@ void *list_get_at_index(t_list *self, int index) {
     for (; i != index + 1 && i < list_size(self); ++i) {
         temp = temp->next;
     }
-    if (temp != NULL) {
+    if (temp) {
         value = temp->value;
     }
     return value;

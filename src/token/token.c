@@ -54,7 +54,7 @@ int is_operator(char c) {
 
 int operator_get_associativity(t_token *self) {
     int associativity = LEFT;
-    if (self->symbol == '^') {
+    if (self->symbol == '^' || self->symbol == NEGATE) {
         associativity = RIGHT;
     }
     return associativity;
@@ -64,14 +64,16 @@ int operator_get_precedence(t_token *operator) {
     int presedence = 8;
     if (operator->type == PARENTHESIS) {
         presedence = 0;
-    } else if (operator->type == FUNCTION) {
+    } else if (operator->type == FUNCTION && operator->symbol != NEGATE) {
         presedence = 1;
+    } else if (operator->type == FUNCTION) {
+        presedence = 3;
     } else if (operator->symbol == '^') {
         presedence = 2;
     } else if (operator->symbol == '*' || operator->symbol == '/') {
-        presedence = 3;
+        presedence = 5;
     } else if (operator->symbol == '+' || operator->symbol == '-') {
-        presedence = 4;
+        presedence = 7;
     }
     return presedence;
 }

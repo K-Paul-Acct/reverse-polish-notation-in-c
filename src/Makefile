@@ -1,7 +1,7 @@
 # Output executable file path.
 BINARY=bin
 # Directories with source code of the project.
-CODEDIRS=.
+CODEDIRS=. ./algorithms ./data_io ./data_structures ./rpn ./token 
 # Directories with definitions of custom libraries.
 INCDIRS=$(CODEDIRS)
 
@@ -17,7 +17,7 @@ DEPFILES=$(patsubst %.c,%.d,$(CFILES))
 all: $(BINARY)
 
 $(BINARY): $(OBJECTS)
-	$(CC) $^ -o $@
+	$(CC) $^ -o $@ -lm
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@

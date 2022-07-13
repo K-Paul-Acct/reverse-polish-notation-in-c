@@ -7,6 +7,7 @@
 #include "data_io.h"
 
 t_list *tokenize_input() {
+    printf("Enter function of x: ");
     t_list *l = list_create();
     t_token *token, *last_token = NULL;
     int scan = 1, iterate = 1;
@@ -211,6 +212,24 @@ void print_tokens(t_list *tokens) {
     printf("\n");
 }
 
+void print_tokens_queue(t_queue *tokens) {
+    t_queue *q = queue_create_copy(tokens);
+    for (int i = 0; !queue_is_empty(q); ++i) {
+        t_token *token = queue_dequeue(q);
+        print_token(token);
+    }
+    printf("\n");
+    queue_destroy(q);
+}
+
 void print_parsing_error() {
     printf("An error occurred while parsing.\n");
+}
+
+void print_rpn_converting_error() {
+    printf("An error occurred while converting to RPN.\n");
+}
+
+void print_computation_error() {
+    printf("An error occurred while computing.\n");
 }

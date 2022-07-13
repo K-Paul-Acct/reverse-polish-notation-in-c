@@ -9,6 +9,16 @@ t_queue *queue_create() {
     return queue;
 }
 
+t_queue *queue_create_copy(t_queue *sample) {
+    t_queue *copy = queue_create();
+    t_node *temp = sample->head;
+    while (temp) {
+        queue_enqueue(copy, temp->value);
+        temp = temp->next;
+    }
+    return copy;
+}
+
 void queue_destroy(t_queue *self) {
     while (!queue_is_empty(self)) {
         free(queue_dequeue(self));
@@ -38,7 +48,11 @@ void *queue_dequeue(t_queue *self) {
 }
 
 void *queue_pick(t_queue *self) {
-    return self->head->value;
+    void *value = NULL;
+    if (!queue_is_empty(self)) {
+        value = self->head->value;
+    }
+    return value;
 }
 
 int queue_is_empty(t_queue *self) {
